@@ -1,0 +1,10 @@
+name = "kokoro-web"
+main = "src/index.ts"
+compatibility_date = "2025-06-01"
+
+[container]
+image = "ghcr.io/eduardolat/kokoro-web:latest"
+
+[[container.env]]
+name = "KW_SECRET_API_KEY"
+value = "your-secret-api-key"
