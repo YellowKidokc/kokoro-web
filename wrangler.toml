@@ -1,8 +1,9 @@
 name = "kokoro-web"
-main = "src/index.ts"
+main = "src/index.ts" # or index.js
 compatibility_date = "2025-06-01"
 
 [container]
+binding = "KOKORO_CONTAINER"
 image = "ghcr.io/eduardolat/kokoro-web:latest"
 
 [[container.env]]
