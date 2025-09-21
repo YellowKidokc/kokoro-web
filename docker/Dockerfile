@@ -35,7 +35,13 @@ COPY package.json .
 COPY package-lock.json .
 RUN npm install
 
+# Configure runtime defaults for Cloudflare Containers.
+ENV NODE_ENV=production
+ENV PORT=8080
+
 COPY . .
 RUN npm run build
+
+EXPOSE 8080
 
 CMD ["node", "build/index.js"]

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onMount } from "svelte";
+  import { onDestroy, onMount } from "svelte";
   import { detectWebGPU } from "$lib/client/utils";
   import { langs, models } from "$lib/shared/resources";
   import SelectControl from "$lib/client/components/SelectControl.svelte";
@@ -14,6 +14,7 @@
   import VersionChecker from "./VersionChecker.svelte";
   import { profile } from "./store.svelte";
   import { generate } from "./generate";
+  import JobQueue from "./JobQueue.svelte";
 
   let webgpuSupported = $state(false);
   onMount(() => {
@@ -28,7 +29,13 @@
 
     loading = true;
     try {
-      voiceUrl = await generate(profile);
+      const result = await generate(profile);
+
+      if (voiceUrl) {
+        URL.revokeObjectURL(voiceUrl);
+      }
+
+      voiceUrl = result.objectUrl;
       toaster.success("Audio generated successfully");
     } catch (error) {
       console.error(error);
@@ -37,6 +44,11 @@
       loading = false;
     }
   };
+  onDestroy(() => {
+    if (voiceUrl) {
+      URL.revokeObjectURL(voiceUrl);
+    }
+  });
 </script>
 
 <div class="space-y-4">
@@ -116,4 +128,9 @@
       <AudioPlayer audioUrl={voiceUrl} showSpectrogram={true} />
     </div>
   {/if}
+
+  <div class="space-y-4 pt-8">
+    <h2 class="text-xl font-bold">Batch Queue</h2>
+    <JobQueue />
+  </div>
 </div>
