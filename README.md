@@ -68,6 +68,19 @@ You can adjust the `compose.yaml` according to your needs or use docker run dire
 
 Then access the web UI at http://localhost:3000 and the API at http://localhost:3000/api/v1/index.html
 
+### Option 3: Deploy on Cloudflare Workers (Containers Beta)
+
+Cloudflare's new container support lets you run the Docker image close to your users while keeping the Worker entry point for routing and auth. The configuration in `wrangler.toml` already defines a container application and Durable Object binding; follow the steps below to deploy:
+
+1. **Check plan access** – Containers currently require a Workers Paid plan or beta access. Confirm the feature is available for your account in the Cloudflare dashboard before deploying.
+2. **Install dependencies** – `npm install`
+3. **Authenticate Wrangler** – `npx wrangler login`
+4. **Configure secrets** – If you need authentication, run `npx wrangler secret put KW_SECRET_API_KEY` (and any other `KW_*` secrets you use). These secrets are passed through the Durable Object so the container sees them as environment variables.
+5. **Provision the container** – `npx wrangler cloudchamber apply`
+6. **Deploy the Worker** – `npx wrangler deploy`
+
+The Worker proxies every request to a long-lived container instance (keyed as `"global"`). You can adjust scaling, regions, or the image by editing the `[containers]` block in `wrangler.toml`.
+
 ## ⚙️ Environment variables
 
 - **KW_SECRET_API_KEY** - Your API key for authentication. If left blank, authentication will not be activated
